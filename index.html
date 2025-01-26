@@ -79,11 +79,24 @@
             border-right: 1px solid #ddd;
             overflow-y: auto;
             padding: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-hidden {
+            transform: translateX(-300px);
         }
         .main-content {
             flex-grow: 1;
             padding: 2rem;
             overflow-y: auto;
+        }
+        .toggle-sidebar {
+            background: #0078d4;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 1rem;
         }
         .close-btn {
             background: #e74c3c;
@@ -126,10 +139,13 @@
     <div id="fullscreen1" class="fullscreen">
         <div class="fullscreen-header">
             <h2>Medición de CO2 con ATmega328P</h2>
-            <button class="close-btn" onclick="closeFullscreen('fullscreen1')">Cerrar</button>
+            <div>
+                <button class="toggle-sidebar" onclick="toggleSidebar('sidebar1')">Toggle Sidebar</button>
+                <button class="close-btn" onclick="closeFullscreen('fullscreen1')">Cerrar</button>
+            </div>
         </div>
         <div class="fullscreen-content">
-            <div class="sidebar">
+            <div id="sidebar1" class="sidebar">
                 <ul>
                     <li><a href="#section1">Código</a></li>
                     <li><a href="#section2">Imágenes</a></li>
@@ -158,54 +174,6 @@ void loop() {
         </div>
     </div>
 
-    <div id="fullscreen2" class="fullscreen">
-        <div class="fullscreen-header">
-            <h2>Estación Meteorológica con ESP32</h2>
-            <button class="close-btn" onclick="closeFullscreen('fullscreen2')">Cerrar</button>
-        </div>
-        <div class="fullscreen-content">
-            <div class="sidebar">
-                <ul>
-                    <li><a href="#section1">Código</a></li>
-                    <li><a href="#section2">Imágenes</a></li>
-                    <li><a href="#section3">Recursos</a></li>
-                </ul>
-            </div>
-            <div class="main-content">
-                <h3 id="section1">Código</h3>
-                <p>Detalles del código aquí.</p>
-                <h3 id="section2">Imágenes</h3>
-                <img src="project2-details.jpg" alt="Detalles Proyecto 2">
-                <h3 id="section3">Recursos</h3>
-                <p>Detalles adicionales aquí.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="fullscreen3" class="fullscreen">
-        <div class="fullscreen-header">
-            <h2>Control de Iluminación con Arduino</h2>
-            <button class="close-btn" onclick="closeFullscreen('fullscreen3')">Cerrar</button>
-        </div>
-        <div class="fullscreen-content">
-            <div class="sidebar">
-                <ul>
-                    <li><a href="#section1">Código</a></li>
-                    <li><a href="#section2">Imágenes</a></li>
-                    <li><a href="#section3">Recursos</a></li>
-                </ul>
-            </div>
-            <div class="main-content">
-                <h3 id="section1">Código</h3>
-                <p>Detalles del código aquí.</p>
-                <h3 id="section2">Imágenes</h3>
-                <img src="project3-details.jpg" alt="Detalles Proyecto 3">
-                <h3 id="section3">Recursos</h3>
-                <p>Detalles adicionales aquí.</p>
-            </div>
-        </div>
-    </div>
-
     <footer>
         <p>&copy; 2025 Miguel Ángel López Rodríguez | Todos los derechos reservados</p>
     </footer>
@@ -217,6 +185,11 @@ void loop() {
 
         function closeFullscreen(fullscreenId) {
             document.getElementById(fullscreenId).style.display = 'none';
+        }
+
+        function toggleSidebar(sidebarId) {
+            const sidebar = document.getElementById(sidebarId);
+            sidebar.classList.toggle('sidebar-hidden');
         }
     </script>
 </body>
