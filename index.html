@@ -1,196 +1,739 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portafolio - Miguel Ángel López Rodríguez</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-        header {
-            background-color: #0078d4;
-            color: white;
-            padding: 1.5rem 0;
-            text-align: center;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        .projects {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        .project {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        .project:hover {
-            transform: scale(1.05);
-        }
-        .project img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .project h3 {
-            margin: 1rem;
-        }
-        .project p {
-            margin: 1rem;
-        }
-        .fullscreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            z-index: 1000;
-            overflow: auto;
-        }
-        .fullscreen-header {
-            background: #0078d4;
-            color: white;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .fullscreen-content {
-            display: flex;
-            height: calc(100% - 60px);
-        }
-        .sidebar {
-            width: 300px;
-            background: #f4f4f9;
-            border-right: 1px solid #ddd;
-            overflow-y: auto;
-            padding: 1rem;
-            transition: transform 0.3s ease;
-        }
-        .sidebar-hidden {
-            transform: translateX(-300px);
-        }
-        .main-content {
-            flex-grow: 1;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-        .toggle-sidebar {
-            background: #0078d4;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 1rem;
-        }
-        .close-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Repositorio de Proyectos Electrónicos</title>
+  
+  <!-- ======= Estilos (CSS) ======= -->
+  <style>
+    /* Paleta de colores y configuración principal */
+    :root {
+      --primary-color: #6a82fb; 
+      --secondary-color: #fc5c7d;
+      --sidebar-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      --text-color: #333;
+      --background-color: #f4f4f9;
+      --container-bg: #ffffff;
+      --highlight-bg: #f5f7ff;
+      --copy-btn-bg: #6a82fb;
+      --copy-btn-color: #fff;
+      --transition-speed: 0.3s;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      /* Puedes habilitar el scroll general de la página si lo deseas:
+         overflow: auto; 
+      */
+    }
+
+    /* Contenedor principal: Sidebar + Contenido */
+    .container {
+      display: flex;
+      height: 100vh;
+      /* Si deseas que el contenido sea más largo que la pantalla y tener scroll: 
+         remove "height: 100vh;" and let content grow. 
+      */
+    }
+
+    /* Botón que muestra/oculta el sidebar */
+    .toggle-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 10; /* Para que se vea por encima del sidebar */
+      background: var(--secondary-color);
+      color: #fff;
+      border: none;
+      font-size: 16px;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background var(--transition-speed);
+    }
+    .toggle-btn:hover {
+      background: #e05569; /* un tono más oscuro del secundario */
+    }
+
+    /* Sidebar */
+    #sidebar {
+      width: 250px;
+      background: var(--sidebar-bg);
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      color: #fff;
+      transition: transform var(--transition-speed) ease;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      transform: translateX(0); /* Visible por defecto */
+      display: flex;
+      flex-direction: column;
+    }
+    /* Cuando el sidebar está "colapsado", se mueve hacia la izquierda */
+    #sidebar.collapsed {
+      transform: translateX(-100%);
+    }
+
+    /* Lista del menú */
+    .menu {
+      list-style: none;
+      margin: 0;
+      padding: 60px 0 0; /* Dejamos espacio arriba para que el botón no tape los items */
+    }
+    .menu li {
+      padding: 15px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      transition: background var(--transition-speed);
+    }
+    .menu li:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Contenido principal */
+    #content {
+      flex: 1;
+      margin-left: 250px; /* Deja espacio para el sidebar */
+      transition: margin-left var(--transition-speed) ease;
+      background-color: var(--container-bg);
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    /* Cuando el sidebar está colapsado, expandimos el contenido a todo el ancho */
+    #content.expanded {
+      margin-left: 0;
+    }
+
+    /* ========== Estilos de sección de Perfil ========== */
+    .intro {
+      text-align: center;
+      padding: 40px;
+    }
+    .welcome-title {
+      font-size: 36px;
+      margin-bottom: 20px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    .intro-text {
+      font-size: 18px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .intro-highlight {
+      font-size: 20px;
+      font-style: italic;
+      color: var(--secondary-color);
+    }
+
+    /* ========== Estilos de proyectos y galerías ========== */
+    .project {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 5px;
+      color: var(--primary-color);
+    }
+
+    /* Imágenes dentro de la descripción */
+    .project img {
+      max-width: 90%;
+      height: auto;
+      display: block;
+      margin: 15px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Contenedor de código con botón copiar */
+    .code-container {
+      position: relative;
+      background: var(--highlight-bg);
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    .code-container pre {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+    .code-container button.copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--copy-btn-bg);
+      color: var(--copy-btn-color);
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    .code-container button.copy-btn:hover {
+      background-color: #5b6adb; /* Un tono más oscuro */
+    }
+
+    /* Video embebido (YouTube) */
+    .video-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .video-container iframe {
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 560px;
+      height: 315px;
+      max-width: 100%;
+    }
+
+    /* Galería de previsualizaciones (3 columnas) */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+      gap: 20px;
+      padding: 20px 0;
+      box-sizing: border-box;
+    }
+    .project-card {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .project-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .project-card h3 {
+      margin: 10px 0 5px;
+      font-size: 20px;
+      color: var(--primary-color);
+    }
+    .project-card p {
+      font-size: 16px;
+      color: #555;
+    }
+
+    /* Responsividad */
+    @media(max-width: 768px) {
+      .project-grid {
+        grid-template-columns: 1fr; /* una columna en pantallas pequeñas */
+      }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Portafolio de Miguel Ángel López Rodríguez</h1>
-        <p>Estudiante de Ingeniería Electrónica en la Universidad Mayor de San Andrés</p>
-    </header>
+  <!-- Contenedor principal -->
+  <div class="container">
+    <!-- Botón para expandir/contraer sidebar (siempre visible en la esquina) -->
+    <button class="toggle-btn" onclick="toggleSidebar()">☰ </button>
 
-    <div class="container">
-        <h2>Proyectos con Microcontroladores</h2>
-        <div class="projects">
-            <div class="project" onclick="openFullscreen('fullscreen1')">
-                <img src="project1.jpg" alt="Proyecto 1">
-                <h3>Medición de CO2 con ATmega328P</h3>
-                <p>Diseño y lanzamiento de una placa PCB con un ATmega328P a la estratósfera para medir concentraciones de CO2.</p>
-            </div>
-            <div class="project" onclick="openFullscreen('fullscreen2')">
-                <img src="project2.jpg" alt="Proyecto 2">
-                <h3>Estación Meteorológica con ESP32</h3>
-                <p>Implementación de una estación meteorológica conectada a internet para monitorear datos ambientales en tiempo real.</p>
-            </div>
-            <div class="project" onclick="openFullscreen('fullscreen3')">
-                <img src="project3.jpg" alt="Proyecto 3">
-                <h3>Control de Iluminación con Arduino</h3>
-                <p>Desarrollo de un sistema domótico para controlar la iluminación de una vivienda utilizando Arduino.</p>
-            </div>
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <ul class="menu">
+        <li onclick="showProjectPreviews()">Ver todos los proyectos</li>
+        <li onclick="loadProject('robotBalanceador')">Robot Balanceador (Arduino Nano)</li>
+        <li onclick="loadProject('iotAlcohol')">IoT Alcohol (ESP32)</li>
+        <li onclick="loadProject('esp32WebServer')">ESP32 Web Server</li>
+        <li onclick="loadProject('arduTester')">ArduTester (Arduino)</li>
+        <li onclick="showProfile()">Mi Perfil</li>
+      </ul>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main id="content">
+      <!-- Se mostrará la galería o el detalle de proyectos dinámicamente -->
+    </main>
+  </div>
+
+  <!-- ======= Template para detalle de proyectos ======= -->
+  <template id="project-template">
+    <div class="project">
+      <h2 id="project-title"></h2>
+
+      <!-- Descripción -->
+      <div class="section">
+        <h3 class="section-title">Descripción</h3>
+        <div id="project-description"></div>
+      </div>
+
+      <!-- Imágenes -->
+      <div class="section">
+        <h3 class="section-title">Esquema / Imágenes</h3>
+        <div id="project-images"></div>
+      </div>
+
+      <!-- Código -->
+      <div class="section">
+        <h3 class="section-title">Código</h3>
+        <div class="code-container">
+          <pre><code id="project-code"></code></pre>
+          <button class="copy-btn" onclick="copyCode()">Copiar Código</button>
         </div>
+      </div>
+
+      <!-- Video (en todos los proyectos, antes de "Recursos") -->
+      <div class="section">
+        <h3 class="section-title">Video</h3>
+        <div class="video-container">
+          <iframe 
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Recursos -->
+      <div class="section">
+        <h3 class="section-title">Recursos</h3>
+        <div id="project-resources"></div>
+      </div>
     </div>
+  </template>
 
-    <!-- Fullscreen detalles -->
-    <div id="fullscreen1" class="fullscreen">
-        <div class="fullscreen-header">
-            <h2>Medición de CO2 con ATmega328P</h2>
-            <div>
-                <button class="toggle-sidebar" onclick="toggleSidebar('sidebar1')">Toggle Sidebar</button>
-                <button class="close-btn" onclick="closeFullscreen('fullscreen1')">Cerrar</button>
-            </div>
-        </div>
-        <div class="fullscreen-content">
-            <div id="sidebar1" class="sidebar">
-                <ul>
-                    <li><a href="#section1">Código</a></li>
-                    <li><a href="#section2">Imágenes</a></li>
-                    <li><a href="#section3">Recursos</a></li>
-                </ul>
-            </div>
-            <div class="main-content">
-                <h3 id="section1">Código</h3>
-                <pre>
-                    <code>
-// Código ejemplo para el proyecto
+  <!-- ======= Script (JavaScript) ======= -->
+  <script>
+    // ============= 1. Definición de proyectos =============
+    const projectData = {
+      /*
+         PROYECTO 1: Robot Balanceador con Arduino Nano
+      */
+      robotBalanceador: {
+        title: 'Robot Balanceador con Arduino Nano',
+        shortDescription: 'Robot de dos ruedas, controlador PID',
+        thumbnail: 'img/robot_balanceador.jpg', // Reemplaza con tu propia imagen
+        description: `
+          <p>Este proyecto consiste en un robot balanceador de dos ruedas que utiliza un algoritmo PID 
+          para mantener el equilibrio. Emplea un Arduino Nano, un MPU6050 para medir la inclinación y 
+          motores DC con drivers. El objetivo es mantenerse estable verticalmente.</p>
+        `,
+        images: ['img/esquema_robot.jpg'], // Ajusta o agrega más imágenes
+        code: 
+`#include <PID_v1.h>
+#include <Wire.h>
+#include "MPU6050.h"
+
+// Pines y variables
+const int motorLeftPin1  = 2; 
+const int motorLeftPin2  = 3; 
+const int motorRightPin1 = 4;
+const int motorRightPin2 = 5;
+
+double setpoint = 0;   // Ángulo objetivo (vertical)
+double input;          // Ángulo actual
+double output;         // Salida del PID
+
+// Parámetros PID (ejemplo)
+double Kp= 30, Ki= 0.8, Kd= 0.5;
+PID myPID(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
+
+// Objeto MPU6050
+MPU6050 mpu;
+
 void setup() {
-    Serial.begin(9600);
-    // Configuración inicial
+  Serial.begin(9600);
+
+  pinMode(motorLeftPin1, OUTPUT);
+  pinMode(motorLeftPin2, OUTPUT);
+  pinMode(motorRightPin1, OUTPUT);
+  pinMode(motorRightPin2, OUTPUT);
+
+  Wire.begin();
+  mpu.initialize();
+
+  // Activar PID
+  myPID.SetMode(AUTOMATIC);
+  myPID.SetOutputLimits(-255, 255);
 }
+
 void loop() {
-    // Lógica de medición de CO2
+  // Leer ángulo desde MPU (simplificado)
+  input = leerAnguloMPU(); 
+  myPID.Compute();
+  controlarMotores(output);
+  delay(10);
 }
-                    </code>
-                </pre>
-                <h3 id="section2">Imágenes</h3>
-                <img src="project1-details.jpg" alt="Detalles Proyecto 1">
-                <h3 id="section3">Recursos</h3>
-                <p>Documentación, esquemas y más.</p>
-            </div>
+
+double leerAnguloMPU() {
+  // Aquí leerás los valores reales del MPU6050
+  return 0.0; 
+}
+
+void controlarMotores(double pidValue) {
+  if(pidValue > 0) {
+    analogWrite(motorLeftPin1, abs(pidValue));
+    analogWrite(motorLeftPin2, 0);
+    analogWrite(motorRightPin1, abs(pidValue));
+    analogWrite(motorRightPin2, 0);
+  } else {
+    analogWrite(motorLeftPin1, 0);
+    analogWrite(motorLeftPin2, abs(pidValue));
+    analogWrite(motorRightPin1, 0);
+    analogWrite(motorRightPin2, abs(pidValue));
+  }
+}
+`,
+        resources: `
+          <p>
+            <a href="https://github.com/tu-repositorio/robot-balanceador" target="_blank">
+              Repositorio GitHub
+            </a><br/>
+            <a href="#">Descargar esquemas</a>
+          </p>
+        `
+      },
+
+      /*
+         PROYECTO 2: Conexión IoT con ESP32 para medir alcohol
+      */
+      iotAlcohol: {
+        title: 'Conexión IoT con ESP32 - Sensor de Alcohol',
+        shortDescription: 'Mide niveles de alcohol en el aire y envía datos a la nube',
+        thumbnail: 'img/iot_alcohol.jpg',
+        description: `
+          <p>Este proyecto utiliza un ESP32 y un sensor de gases (ej. MQ-3) para detectar 
+          la concentración de alcohol en el aire. Los datos se suben a una plataforma IoT 
+          (ej. Thingspeak, Ubidots) para monitoreo en tiempo real.</p>
+        `,
+        images: ['img/esquema_alcohol.jpg'],
+        code: 
+`#include <WiFi.h>
+#include <HTTPClient.h>
+
+// Config WiFi
+const char* ssid     = "TuSSID";
+const char* password = "TuPassword";
+
+// IoT (Thingspeak) API
+String serverName = "http://api.thingspeak.com/update?api_key=TU_API_KEY"; 
+
+// Pin del sensor MQ-3 (analógico)
+const int sensorPin = 34;
+
+void setup() {
+  Serial.begin(115200);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\\nConectado a WiFi");
+}
+
+void loop() {
+  int sensorValue = analogRead(sensorPin);
+  Serial.print("Valor sensor alcohol: ");
+  Serial.println(sensorValue);
+
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String serverPath = serverName + "&field1=" + sensorValue;
+    http.begin(serverPath.c_str());
+    int httpResponseCode = http.GET();
+    
+    if(httpResponseCode>0) {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+    } else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+    http.end();
+  }
+  delay(15000);
+}
+`,
+        resources: `
+          <p>
+            <a href="https://thingspeak.com" target="_blank">Thingspeak</a><br/>
+            <a href="#">Documentación MQ-3</a>
+          </p>
+        `
+      },
+
+      /*
+         PROYECTO 3: ESP32 como Servidor Web
+      */
+      esp32WebServer: {
+        title: 'ESP32 como Servidor Web',
+        shortDescription: 'Monitoreo/Control vía navegador',
+        thumbnail: 'img/esp32_webserver.jpg',
+        description: `
+          <p>Configura el ESP32 como servidor web básico para encender/apagar un LED 
+          y ver el estado en tiempo real desde un navegador en la misma red.</p>
+        `,
+        images: ['img/esquema_webserver.jpg'],
+        code:
+`#include <WiFi.h>
+#include <WebServer.h>
+
+// WiFi
+const char* ssid     = "TuSSID";
+const char* password = "TuPassword";
+
+// Servidor en puerto 80
+WebServer server(80);
+const int ledPin = 2;
+
+void handleRoot() {
+  String page = "<!DOCTYPE html><html>";
+  page += "<head><title>Control LED</title></head>";
+  page += "<body style='text-align:center;'>";
+  page += "<h2>Encender / Apagar LED</h2>";
+  page += "<p><a href='/on'>Encender</a></p>";
+  page += "<p><a href='/off'>Apagar</a></p>";
+  page += "</body></html>";
+  server.send(200, "text/html", page);
+}
+
+void handleOn() {
+  digitalWrite(ledPin, HIGH);
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+void handleOff() {
+  digitalWrite(ledPin, LOW);
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\\nWiFi conectado.");
+  Serial.print("IP: ");
+  Serial.println(WiFi.localIP());
+
+  server.on("/", handleRoot);
+  server.on("/on", handleOn);
+  server.on("/off", handleOff);
+  server.begin();
+  Serial.println("Servidor iniciado");
+}
+
+void loop() {
+  server.handleClient();
+}
+`,
+        resources: `
+          <p>
+            <a href="https://randomnerdtutorials.com/esp32-web-server-tutorial/" target="_blank">
+              Tutorial de referencia
+            </a>
+          </p>
+        `
+      },
+
+      /*
+         PROYECTO 4: ArduTester (Arduino)
+      */
+      arduTester: {
+        title: 'ArduTester (Arduino)',
+        shortDescription: 'Probador universal de componentes',
+        thumbnail: 'img/ardutester_thumb.jpg',
+        description: `
+          <p>El ArduTester es un dispositivo basado en Arduino que permite probar y detectar
+          diferentes componentes electrónicos como transistores, diodos, resistencias, etc.
+          Muestra información útil como la ganancia de transistores, caída de tensión de diodos,
+          valor de resistencias, etc.</p>
+        `,
+        images: ['img/esquema_ardutester.jpg'],
+        code:
+`/*
+  Código base del ArduTester - Ejemplo
+*/
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("Iniciando ArduTester...");
+  // Inicializar pines, display, etc.
+}
+
+void loop() {
+  // 1. Medir el componente
+  // 2. Identificar tipo
+  // 3. Calcular parámetros
+  // 4. Mostrar resultados
+  Serial.println("Midiendo componente...");
+  delay(2000);
+}
+`,
+        resources: `
+          <p>
+            <a href="https://github.com/tu-repositorio/ardutester" target="_blank">
+              Repositorio GitHub
+            </a><br/>
+            <a href="#">Descargar manual PDF</a>
+          </p>
+        `
+      }
+    };
+
+    // ============= 2. Función para expandir/contraer la barra lateral =============
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const content = document.getElementById('content');
+      sidebar.classList.toggle('collapsed');
+      content.classList.toggle('expanded');
+    }
+
+    // ============= 3. Cargar el detalle de un proyecto =============
+    function loadProject(projectName) {
+      const project = projectData[projectName];
+      if (!project) return;
+
+      // Clonamos el template
+      const template = document.getElementById('project-template').content.cloneNode(true);
+
+      // Rellenar datos
+      template.querySelector('#project-title').textContent = project.title;
+      template.querySelector('#project-description').innerHTML = project.description;
+
+      // Imágenes
+      const imagesDiv = template.querySelector('#project-images');
+      project.images.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        imagesDiv.appendChild(img);
+      });
+
+      // Código
+      template.querySelector('#project-code').textContent = project.code;
+
+      // Recursos
+      template.querySelector('#project-resources').innerHTML = project.resources;
+
+      // Insertar en #content
+      const content = document.getElementById('content');
+      content.innerHTML = '';
+      content.appendChild(template);
+    }
+
+    // ============= 4. Mostrar la galería de proyectos =============
+    function showProjectPreviews() {
+      const content = document.getElementById('content');
+      content.innerHTML = ''; // Limpiamos el contenido
+
+      // Creamos la galería en 3 columnas
+      const grid = document.createElement('div');
+      grid.classList.add('project-grid');
+
+      // Por cada proyecto, creamos una tarjeta
+      for (const key in projectData) {
+        if (projectData.hasOwnProperty(key)) {
+          const project = projectData[key];
+
+          const card = document.createElement('div');
+          card.classList.add('project-card');
+
+          // Imagen
+          const img = document.createElement('img');
+          img.src = project.thumbnail;
+          img.alt = project.title;
+
+          // Título
+          const title = document.createElement('h3');
+          title.textContent = project.title;
+
+          // Descripción corta
+          const desc = document.createElement('p');
+          desc.textContent = project.shortDescription;
+
+          // Añadimos al card
+          card.appendChild(img);
+          card.appendChild(title);
+          card.appendChild(desc);
+
+          // Al hacer click, cargamos el proyecto
+          card.addEventListener('click', () => {
+            loadProject(key);
+          });
+
+          grid.appendChild(card);
+        }
+      }
+
+      // Añadimos el grid al contenido
+      content.appendChild(grid);
+    }
+
+    // ============= 5. Mostrar el perfil personal =============
+    function showProfile() {
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="intro">
+          <h1 class="welcome-title">Mi Perfil</h1>
+          <p class="intro-text">
+            Soy <strong>Miguel Ángel López Rodríguez</strong>, estudiante de la
+            Facultad de Ingeniería Electrónica de la Universidad Mayor de San Andrés.
+            Aquí encontrarás mis datos personales y una breve biografía, así como
+            formas de contacto.
+          </p>
+          <p class="intro-highlight">
+            Puedes contactarme en 
+            <a href="mailto:lopezrodriguezmangel@gmail.com">lopezrodriguezmangel@gmail.com</a>.
+          </p>
+          <!-- Agrega más detalles si lo deseas -->
         </div>
-    </div>
+      `;
+    }
 
-    <footer>
-        <p>&copy; 2025 Miguel Ángel López Rodríguez | Todos los derechos reservados</p>
-    </footer>
+    // ============= 6. Función para copiar el código =============
+    function copyCode() {
+      const codeElement = document.getElementById("project-code");
+      const codeToCopy = codeElement.innerText;
 
-    <script>
-        function openFullscreen(fullscreenId) {
-            document.getElementById(fullscreenId).style.display = 'block';
-        }
+      navigator.clipboard.writeText(codeToCopy)
+        .then(() => {
+          alert("¡Código copiado al portapapeles!");
+        })
+        .catch(err => {
+          console.error("Error al copiar:", err);
+        });
+    }
 
-        function closeFullscreen(fullscreenId) {
-            document.getElementById(fullscreenId).style.display = 'none';
-        }
-
-        function toggleSidebar(sidebarId) {
-            const sidebar = document.getElementById(sidebarId);
-            sidebar.classList.toggle('sidebar-hidden');
-        }
-    </script>
+    // ============= 7. Al cargar la página, mostrar la galería por defecto =============
+    document.addEventListener('DOMContentLoaded', showProjectPreviews);
+  </script>
 </body>
 </html>
